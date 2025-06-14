@@ -7,12 +7,12 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAFDvRjJcCIbrFb-74IB9nbB0imGb5ud70",
-  authDomain: "workbuddy-ai.firebaseapp.com",
-  projectId: "workbuddy-ai",
-  storageBucket: "workbuddy-ai.firebasestorage.app",
-  messagingSenderId: "1080780445399",
-  appId: "1:1080780445399:web:3eef22c5cfb53db8fc4292",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: "G-CTW7ZF4FFF"
 };
 

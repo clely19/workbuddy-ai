@@ -1,24 +1,54 @@
-//Extract structured data from this command:
-// Input: "Remind me to finish my AI homework on Monday at 6 PM."
-// Output:
-// {
-//   "action": "create_reminder",
-//   "task": "finish my AI homework",
-//   "datetime": "Monday 6 PM"
-// }
+import { GoogleGenAI, Type } from "@google/genai";
 
-import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+//calling gemini model
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
-export const storeCommandInFirebase = async (commandText) => {
-  console.log("Entered storeCommandInFirebase");
+
+export const parseCommandWithGemini = async (command) => {
   try {
-    const docRef = await addDoc(collection(db, "commands"), {
-      command: commandText,
-      createdAt: serverTimestamp()
+    const result = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `Convert the following command into a structured task JSON. Command: "${command}"`,
+            },
+          ],
+        },
+      ],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            task: {
+              type: Type.STRING,
+              description: "The task or action to perform",
+            },
+            datetime: {
+              type: Type.STRING,
+              description: "ISO timestamp of when the task should occur",
+            },
+          },
+          required: ["task", "datetime"],
+          propertyOrdering: ["task", "datetime"],
+        },
+      },
     });
-    console.log("Command saved with ID:", docRef.id);
+
+
+    // Safely parse the JSON
+    const response = await result.text;
+    const json = JSON.parse(response);
+    console.log("Parsed from Gemini:", json);
+    return json;
+
   } catch (error) {
-    console.error("Error adding command:", error);
+    console.error("Gemini agent error:", error);
+    return null;
   }
 };
+
+

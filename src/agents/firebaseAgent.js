@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 
 export const storeCommandInFirebase = async (commandText) => {
@@ -26,3 +26,15 @@ export const storeCommandInFirebase = async (commandText) => {
       console.error("Error saving parsed command:", error);
     }
   };
+
+  export const fetchParsedCommandInFirebase = (onUpdate) => {
+    const q = query(collection(db,"parsed_commands"), orderBy("datetime", "desc"));
+    return onSnapshot(q, (snapshot)=>{
+        const tasks = snapshot.docs.map(doc => ({
+            id:doc.id,
+            ...doc.data()
+        }));
+        onUpdate(tasks);
+    }
+);
+  }

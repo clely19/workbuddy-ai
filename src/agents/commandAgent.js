@@ -3,6 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 //calling gemini model
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
+const today = new Date().toISOString().split("T")[0];
+
 
 export const parseCommandWithGemini = async (command) => {
   try {
@@ -13,7 +15,7 @@ export const parseCommandWithGemini = async (command) => {
           role: "user",
           parts: [
             {
-              text: `Convert the following command into a structured task JSON. Command: "${command}"`,
+              text: `Convert the following command into a structured task JSON. Today is ${today}. Command: "${command}"`,
             },
           ],
         },
@@ -29,7 +31,7 @@ export const parseCommandWithGemini = async (command) => {
             },
             datetime: {
               type: Type.STRING,
-              description: "ISO timestamp of when the task should occur",
+              description: "ISO timestamp in the format YYYY-MM-DDTHH:mm",
             },
           },
           required: ["task", "datetime"],
